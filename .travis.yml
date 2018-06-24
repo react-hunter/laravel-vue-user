@@ -1,0 +1,28 @@
+language: php
+
+php:
+  - 7.0
+
+services:
+  - mysql
+
+cache:
+  - node_modules
+  - vendor
+
+before_install:
+  - mysql -e 'CREATE DATABASE laravel_vue_user_test;'
+
+before_script:
+  - cp .env.testing.example .env
+  - composer install -n --prefer-dist
+  - composer run key:generate
+  - composer run jwt:generate
+  - php artisan vue-i18n:generate
+  - php artisan migrate --seed
+  - yarn --pure-lockfile
+  - yarn production
+
+script:
+  - composer test
+  - yarn test
